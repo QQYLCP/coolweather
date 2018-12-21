@@ -1,7 +1,7 @@
 package com.coolweather.android;
 
 import org.junit.Test;
-//version1.0
+
 import static org.junit.Assert.*;
 
 /**
