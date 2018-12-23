@@ -6,9 +6,13 @@ public class Basic {
 
     @SerializedName("city")
     public String cityName;
+    @SerializedName("location")
+    public String location;
 
     @SerializedName("id")
     public String weatherId;
+    @SerializedName("cid")
+    public String cityId;
 
     public Update update;
 

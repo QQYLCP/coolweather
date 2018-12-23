@@ -51,10 +51,17 @@ public class AutoUpdateService extends Service {
     private void updateWeather(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
+         String weatherId;
         if (weatherString != null) {
             // 有缓存时直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            String weatherId = weather.basic.weatherId;
+            weatherId = weather.basic.weatherId;
+//            try{
+//                 weatherId = weather.basic.weatherId;
+//
+//            }catch(Exception e){
+//                weatherId = weather.basic.cityId;
+//            }
             //ba9079704cc44512bb3af201ef10af15
             String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=fb0e22d7b17f4bd0947c2e0c0045093d";
 

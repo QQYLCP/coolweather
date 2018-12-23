@@ -27,4 +27,11 @@ public class Forecast {
 
     }
 
+    @SerializedName("tmp_max")
+    public String tmp_max;
+    @SerializedName("tmp_min")
+    public String tmp_min;
+
+    @SerializedName("cond_txt_d")
+    public String cond_txt_d;
 }

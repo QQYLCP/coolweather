@@ -13,6 +13,7 @@ public class Weather {
     public AQI aqi;
 
     public Now now;
+    public Update update;
 
     public Suggestion suggestion;
 
