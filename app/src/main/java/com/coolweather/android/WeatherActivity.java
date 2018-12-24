@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.coolweather.android.gson.Forecast;
+import com.coolweather.android.gson.Lifestyle;
 import com.coolweather.android.gson.Weather;
 import com.coolweather.android.service.AutoUpdateService;
 import com.coolweather.android.util.HttpUtil;
@@ -95,23 +97,33 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navButton = (Button) findViewById(R.id.nav_button);
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        String weatherString = prefs.getString("weather", null);
-//        if (weatherString != null) {
-//            // 有缓存时直接解析天气数据
-//            Weather weather = Utility.handleWeatherResponse(weatherString);
-//            mWeatherId = weather.basic.weatherId;
-//            showWeatherInfo(weather);
-//        } else {
-            // 无缓存时去服务器查询天气
-//            mWeatherId = getIntent().getStringExtra("weather_id");
-            lat = getIntent().getStringExtra("lat");
-            lon = getIntent().getStringExtra("lon");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String weatherString = prefs.getString("weather", null);
+        if (weatherString != null) {
+//             有缓存时直接解析天气数据
+            Weather weather = Utility.handleWeatherResponse(weatherString);
+            if (weather.basic.cityId!=null){
+                mWeatherId = weather.basic.cityId;
+                showWeatherInfobylat(weather);
+            }else {
+                mWeatherId = weather.basic.weatherId;
+                showWeatherInfobycityid(weather);
+            }
+        } else {
+//             无缓存时去服务器查询天气
+            mWeatherId = getIntent().getStringExtra("weather_id");
 
-            weatherLayout.setVisibility(View.INVISIBLE);
-//            requestWeathercityid(mWeatherId);
-            requestWeatherbylat(lat,lon);
-//        }
+            if (getIntent().getStringExtra("weather_id")!=null) {
+                weatherLayout.setVisibility(View.INVISIBLE);
+                requestWeatherbycityid(mWeatherId);
+            }else {
+                Log.d("AAaaaa","vvvvvvvvvvvvvvvvvvvvvvvvv");
+                lat = getIntent().getStringExtra("lat");
+                lon = getIntent().getStringExtra("lon");
+                weatherLayout.setVisibility(View.INVISIBLE);
+                requestWeatherbylat(lat,lon);
+            }
+        }
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -124,27 +136,25 @@ public class WeatherActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-//        String bingPic = prefs.getString("bing_pic", null);
-//        if (bingPic != null) {
-//            Glide.with(this).load(bingPic).into(bingPicImg);
-//        } else {
-//            loadBingPic();
-//        }
+        String bingPic = prefs.getString("bing_pic", null);
+        if (bingPic != null) {
+            Glide.with(this).load(bingPic).into(bingPicImg);
+        } else {
+            loadBingPic();
+        }
     }
-
     /**
      * 根据经纬度请求城市天气信息。
      */
     public void requestWeatherbylat(final String lat,final String lon) {
-
-        String weatherUrl = "https://free-api.heweather.com/s6/weather?key=fb0e22d7b17f4bd0947c2e0c0045093d&location="+lat+","+lon;
+        //fb0e22d7b17f4bd0947c2e0c0045093d
+        String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
 
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseText = response.body().string();
                 final Weather weather = Utility.handleWeatherResponse(responseText);
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -152,9 +162,8 @@ public class WeatherActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather", responseText);
                             editor.apply();
-//                            mWeatherId = weather.basic.weatherId;
                             mWeatherId = weather.basic.cityId;
-                            showWeatherInfo(weather);
+                            showWeatherInfobylat(weather);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败3", Toast.LENGTH_SHORT).show();
                         }
@@ -162,7 +171,6 @@ public class WeatherActivity extends AppCompatActivity {
                     }
                 });
             }
-
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -181,10 +189,8 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求城市天气信息。
      */
     public void requestWeatherbycityid(final String weatherId) {
-
         //ba9079704cc44512bb3af201ef10af15
-        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=fb0e22d7b17f4bd0947c2e0c0045093d";
-
+        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=31404c2b55de4f46a157f691d73feecc";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -198,7 +204,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather", responseText);
                             editor.apply();
                             mWeatherId = weather.basic.weatherId;
-                            showWeatherInfobyid(weather);
+                            showWeatherInfobycityid(weather);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败1", Toast.LENGTH_SHORT).show();
                         }
@@ -223,42 +229,12 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     /**
-     * 加载必应每日一图
+     * 根据经纬度处理并展示Weather实体类中的数据。
      */
-    private void loadBingPic() {
-        String requestBingPic = "http://guolin.tech/api/bing_pic";
-        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String bingPic = response.body().string();
-                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
-                editor.putString("bing_pic", bingPic);
-                editor.apply();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Glide.with(WeatherActivity.this).load(bingPic).into(bingPicImg);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    /**
-     * 处理并展示Weather实体类中的数据。
-     */
-    private void showWeatherInfo(Weather weather) {
-//        String cityName = weather.basic.cityName;//*
+    private void showWeatherInfobylat(Weather weather) {
         String cityName = weather.basic.location;//*
-//        String updateTime = weather.basic.update.updateTime.split(" ")[1];
-        String updateTime = weather.update.updateTime;
+        String updateTime = weather.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature + "℃";
-//        String weatherInfo = weather.now.more.info;*
         String weatherInfo = weather.now.wcode;
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
@@ -272,33 +248,35 @@ public class WeatherActivity extends AppCompatActivity {
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
             TextView minText = (TextView) view.findViewById(R.id.min_text);
             dateText.setText(forecast.date);
-//            infoText.setText(forecast.more.info);
-//            maxText.setText(forecast.temperature.max);
-//            minText.setText(forecast.temperature.min);
-
             infoText.setText(forecast.cond_txt_d);
             maxText.setText(forecast.tmp_max);
             minText.setText(forecast.tmp_min);
             forecastLayout.addView(view);
         }
-//        if (weather.aqi != null) {
-//            aqiText.setText(weather.aqi.city.aqi);
-//            pm25Text.setText(weather.aqi.city.pm25);
-//        }
+        //设置空气质量不可见，因为没有数据
+        aqiText.setVisibility(View.GONE);
+        pm25Text.setVisibility(View.GONE);
+        TextView  noseetitle = (TextView) findViewById(R.id.nosee);
+        noseetitle.setVisibility(View.GONE);
+        TextView  aqinum = (TextView) findViewById(R.id.aqinum);
+        aqinum.setVisibility(View.GONE);
+        TextView  pmnum = (TextView) findViewById(R.id.pmnum);
+        pmnum.setVisibility(View.GONE);
 
-//        String comfort = "舒适度：" + weather.suggestion.comfort.info;
-//        String carWash = "洗车指数：" + weather.suggestion.carWash.info;
-//        String sport = "运行建议：" + weather.suggestion.sport.info;
-//        comfortText.setText(comfort);
-//        carWashText.setText(carWash);
-//        sportText.setText(sport);
-//        String sport = "运行建议：" + weather.lifestyle;
-
+        String comfort = "舒适度：" + weather.lifestyleList.get(0).txt;
+        String carWash = "洗车指数：" + weather.lifestyleList.get(6).txt;
+        String sport = "运行建议：" + weather.lifestyleList.get(3).txt;
+        comfortText.setText(comfort);
+        carWashText.setText(carWash);
+        sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
         Intent intent = new Intent(this, AutoUpdateService.class);
         startService(intent);
     }
-    private void showWeatherInfobyid(Weather weather) {
+    /**
+     * 根据cityid处理并展示Weather实体类中的数据。
+     */
+    private void showWeatherInfobycityid(Weather weather) {
         String cityName = weather.basic.cityName;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature + "℃";
@@ -333,5 +311,31 @@ public class WeatherActivity extends AppCompatActivity {
         weatherLayout.setVisibility(View.VISIBLE);
 //        Intent intent = new Intent(this, AutoUpdateService.class);
 //        startService(intent);
+    }
+    /**
+     * 加载必应每日一图
+     */
+    private void loadBingPic() {
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("bing_pic", bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bingPic).into(bingPicImg);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

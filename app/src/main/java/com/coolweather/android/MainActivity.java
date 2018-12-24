@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         initData();
-
         positionText = (TextView) findViewById(R.id.position_text_view);
         List<String> permissionList = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -91,18 +90,15 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     Thread.sleep(1000);
-
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 pDialog.dismiss(); //对话框关闭
             }
         }).start();
-
     }
     private void showProgressDialog(String title)
     {
-
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
         pDialog.setMessage(title+"...");
@@ -110,21 +106,7 @@ public class MainActivity extends AppCompatActivity {
         pDialog.show();
     }
     private void requestLocation() {
-        initLocation();
         mLocationClient.start();
-    }
-
-    private void initLocation() {
-        LocationClientOption option = new LocationClientOption();
-        option.setScanSpan(5000);
-        option.setIsNeedAddress(true);
-        mLocationClient.setLocOption(option);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mLocationClient.stop();
     }
 
     @Override
@@ -150,22 +132,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class MyLocationListener implements BDLocationListener {
-
         @Override
         public void onReceiveLocation( final BDLocation location) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    StringBuilder currentPosition = new StringBuilder();
-                    currentPosition.append("纬度：").append(location.getLatitude()).append("\n");
-                    currentPosition.append("经线：").append(location.getLongitude()).append("\n");
-                    positionText.setText(currentPosition);
-
                     Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
                     String lat = location.getLatitude()+"";
                     String lon =  location.getLongitude()+"";
                     intent.putExtra("lat", lat);
                     intent.putExtra("lon",lon);
+//                    Log.d("AAAAA","AAaaaaaaaaaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                     startActivity(intent);
                 }
             });

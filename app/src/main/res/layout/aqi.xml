@@ -8,6 +8,7 @@
     android:background="#8000">
 
     <TextView
+        android:id="@+id/nosee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
@@ -42,6 +43,7 @@
                     />
 
                 <TextView
+                    android:id="@+id/aqinum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -73,6 +75,7 @@
                     />
 
                 <TextView
+                    android:id="@+id/pmnum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
