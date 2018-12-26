@@ -43,6 +43,7 @@ public class WeatherActivity extends AppCompatActivity {
     private ScrollView weatherLayout;
 
     private Button navButton;
+    private Button localButton;
 
     private TextView titleCity;
 
@@ -97,18 +98,39 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navButton = (Button) findViewById(R.id.nav_button);
+        localButton = (Button) findViewById(R.id.local_button);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
+        final Weather weather;
+
         if (weatherString != null) {
 //             有缓存时直接解析天气数据
-            Weather weather = Utility.handleWeatherResponse(weatherString);
-            if (weather.basic.cityId!=null){
-                mWeatherId = weather.basic.cityId;
-                showWeatherInfobylat(weather);
-            }else {
-                mWeatherId = weather.basic.weatherId;
-                showWeatherInfobycityid(weather);
+            String a = getIntent().getStringExtra("position");
+            //点击地位
+            if (a.equals("2")){
+                lat = getIntent().getStringExtra("lat");
+                lon = getIntent().getStringExtra("lon");
+                weatherLayout.setVisibility(View.INVISIBLE);
+                requestWeatherbylat(lat,lon);
+            }else{
+                if (Utility.handleWeatherResponsebyid(weatherString)==null){
+                    weather = Utility.handleWeatherResponse(weatherString);
+                }else{
+                    weather = Utility.handleWeatherResponsebyid(weatherString);
+                }
+                //经纬度
+                if (weather.basic.cityId!=null && weather.basic.weatherId==null ){
+                    mWeatherId = weather.basic.cityId;
+                    Log.d("uuuu","ppp");
+                    showWeatherInfobylat(weather);
+                }else {
+                    Log.d("vvv","xx");
+                    mWeatherId = weather.basic.weatherId;
+                    showWeatherInfobycityid(weather);
+                }
             }
+//            }catch (Exception e){
+
         } else {
 //             无缓存时去服务器查询天气
             mWeatherId = getIntent().getStringExtra("weather_id");
@@ -117,10 +139,10 @@ public class WeatherActivity extends AppCompatActivity {
                 weatherLayout.setVisibility(View.INVISIBLE);
                 requestWeatherbycityid(mWeatherId);
             }else {
-                Log.d("AAaaaa","vvvvvvvvvvvvvvvvvvvvvvvvv");
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
                 weatherLayout.setVisibility(View.INVISIBLE);
+                Log.d("44444","梵蒂冈跟不上");
                 requestWeatherbylat(lat,lon);
             }
         }
@@ -134,6 +156,13 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        localButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(WeatherActivity.this,LocalActivity.class);
+                startActivity(intent);
             }
         });
         String bingPic = prefs.getString("bing_pic", null);
@@ -167,7 +196,7 @@ public class WeatherActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败3", Toast.LENGTH_SHORT).show();
                         }
-                        swipeRefresh.setRefreshing(false);
+//                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -270,13 +299,22 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
-        Intent intent = new Intent(this, AutoUpdateService.class);
-        startService(intent);
+//        Intent intent = new Intent(this, AutoUpdateService.class);
+//        startService(intent);
     }
     /**
      * 根据cityid处理并展示Weather实体类中的数据。
      */
     private void showWeatherInfobycityid(Weather weather) {
+        aqiText.setVisibility(View.VISIBLE);
+        pm25Text.setVisibility(View.VISIBLE);
+        TextView  noseetitle = (TextView) findViewById(R.id.nosee);
+        noseetitle.setVisibility(View.VISIBLE);
+        TextView  aqinum = (TextView) findViewById(R.id.aqinum);
+        aqinum.setVisibility(View.VISIBLE);
+        TextView  pmnum = (TextView) findViewById(R.id.pmnum);
+        pmnum.setVisibility(View.VISIBLE);
+
         String cityName = weather.basic.cityName;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature + "℃";

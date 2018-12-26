@@ -42,44 +42,42 @@ import com.google.gson.GsonBuilder;
 public class MainActivity extends AppCompatActivity {
     public LocationClient mLocationClient;
 
-    private TextView positionText;
     private ProgressDialog pDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        if (prefs.getString("weather", null) != null) {
-//            Intent intent = new Intent(this, WeatherActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
-//    }
-//}
-
         super.onCreate(savedInstanceState);
-        mLocationClient = new LocationClient(getApplicationContext());
-        mLocationClient.registerLocationListener(new MyLocationListener());
-        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
-        initData();
-        positionText = (TextView) findViewById(R.id.position_text_view);
-        List<String> permissionList = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getString("weather", null) != null) {
+            Intent intent = new Intent(this, WeatherActivity.class);
+            intent.putExtra("position", "1");
+
+            startActivity(intent);
+            finish();
+        }else {
+            mLocationClient = new LocationClient(getApplicationContext());
+            mLocationClient.registerLocationListener(new MyLocationListener());
+            SDKInitializer.initialize(getApplicationContext());
+            initData();
+//            positionText = (TextView) findViewById(R.id.position_text_view);
+            List<String> permissionList = new ArrayList<>();
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(Manifest.permission.READ_PHONE_STATE);
+            }
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+            if (!permissionList.isEmpty()) {
+                String[] permissions = permissionList.toArray(new String[permissionList.size()]);
+                ActivityCompat.requestPermissions(MainActivity.this, permissions, 1);
+            } else {
+                requestLocation();
+            }
         }
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.READ_PHONE_STATE);
-        }
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-        if (!permissionList.isEmpty()) {
-            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(MainActivity.this, permissions, 1);
-        } else {
-            requestLocation();
-        }
+
     }
     private void initData()
     {
@@ -108,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
     private void requestLocation() {
         mLocationClient.start();
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -142,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     String lon =  location.getLongitude()+"";
                     intent.putExtra("lat", lat);
                     intent.putExtra("lon",lon);
-//                    Log.d("AAAAA","AAaaaaaaaaaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    intent.putExtra("position", "1");
                     startActivity(intent);
                 }
             });
