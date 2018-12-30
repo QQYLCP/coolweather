@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.coolweather.android.db.City;
 import com.coolweather.android.db.County;
 import com.coolweather.android.db.Province;
+import com.coolweather.android.gson.Air;
+import com.coolweather.android.gson.Air_now_city;
 import com.coolweather.android.gson.Weather;
 import com.google.gson.Gson;
 
@@ -108,4 +110,18 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 将返回的JSON数据解析成Air_now_city实体类
+     */
+    public static Air handleWeatherResponseAir(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Air.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

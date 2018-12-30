@@ -22,4 +22,5 @@ public class Weather {
 
     @SerializedName("lifestyle")
     public List<Lifestyle> lifestyleList;
+
 }

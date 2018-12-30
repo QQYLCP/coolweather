@@ -25,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.coolweather.android.gson.Air;
+import com.coolweather.android.gson.Air_now_city;
 import com.coolweather.android.gson.Forecast;
 import com.coolweather.android.gson.Lifestyle;
 import com.coolweather.android.gson.Weather;
@@ -124,12 +126,16 @@ public class WeatherActivity extends AppCompatActivity {
                 weatherLayout.setVisibility(View.INVISIBLE);
                 String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
                 requestWeatherbylat(weatherUrl);
+                String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                requestWeatherbyAir(weatherUrl1);
             }
             else if (a.equals("3")){
                 String cityname = getIntent().getStringExtra("cityname");
                 weatherLayout.setVisibility(View.INVISIBLE);
                 String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+cityname;
                 requestWeatherbylat(weatherUrl);
+                String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+cityname;
+                requestWeatherbyAir(weatherUrl1);
             }
             else{
                 if (Utility.handleWeatherResponsebyid(weatherString)==null){
@@ -140,10 +146,8 @@ public class WeatherActivity extends AppCompatActivity {
                 //经纬度
                 if (weather.basic.cityId!=null && weather.basic.weatherId==null ){
                     mWeatherId = weather.basic.cityId;
-                    Log.d("uuuu","ppp");
                     showWeatherInfobylat(weather);
                 }else {
-                    Log.d("vvv","xx");
                     mWeatherId = weather.basic.weatherId;
                     showWeatherInfobycityid(weather);
                 }
@@ -156,11 +160,9 @@ public class WeatherActivity extends AppCompatActivity {
                 weatherLayout.setVisibility(View.INVISIBLE);
                 requestWeatherbycityid(mWeatherId);
             }else {
-
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
                 weatherLayout.setVisibility(View.INVISIBLE);
-                Log.d("44444","梵蒂冈跟不上");
                 String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
                 requestWeatherbylat(weatherUrl);
             }
@@ -216,11 +218,12 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather", responseText);
                             editor.apply();
                             mWeatherId = weather.basic.cityId;
+                            String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                            requestWeatherbyAir(weatherUrl1);
                             showWeatherInfobylat(weather);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败3", Toast.LENGTH_SHORT).show();
                         }
-//                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -242,7 +245,6 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求城市天气信息。
      */
     public void requestWeatherbycityid(final String weatherId) {
-        //ba9079704cc44512bb3af201ef10af15
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=31404c2b55de4f46a157f691d73feecc";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -265,7 +267,6 @@ public class WeatherActivity extends AppCompatActivity {
                     }
                 });
             }
-
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -280,7 +281,57 @@ public class WeatherActivity extends AppCompatActivity {
         });
         loadBingPic();
     }
+    /**
+     * 根据经纬度请求空气质量信息。
+     */
+    public void requestWeatherbyAir(final String weatherUrl) {
+        HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseText = response.body().string();
+                final Air air = Utility.handleWeatherResponseAir(responseText);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (air != null && "ok".equals(air.status)) {
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                            editor.putString("air", responseText);
+                            editor.apply();
+                            Air_now_city air_now_city1=new Air_now_city();
+                            air_now_city1.aqi1=air.air_now_city.aqi1;
+                            air_now_city1.pm251=air.air_now_city.pm251;
+                            showWeatherInfobyair(air_now_city1);
+                        } else {
+                            //设置空气质量不可见，因为没有数据
+                            apilayout.setVisibility(View.GONE);
+                            Toast.makeText(WeatherActivity.this, "获取天气信息失败3", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
 
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this, "获取天气信息失败4", Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
+                    }
+                });
+            }
+        });
+        loadBingPic();
+    }
+    /**
+     * 显示空气质量信息。
+     */
+    private void showWeatherInfobyair(Air_now_city air_now_city) {
+
+            aqiText.setText(air_now_city.aqi1);
+            pm25Text.setText(air_now_city.pm251);
+    }
     /**
      * 根据经纬度处理并展示Weather实体类中的数据。
      */
@@ -319,9 +370,6 @@ public class WeatherActivity extends AppCompatActivity {
             pic_img.setImageDrawable(getResources().getDrawable(resID1));
             forecastLayout.addView(view);
         }
-        //设置空气质量不可见，因为没有数据
-        apilayout.setVisibility(View.GONE);
-
 
         String comfort = "舒适度：" + weather.lifestyleList.get(0).txt;
         String carWash = "洗车指数：" + weather.lifestyleList.get(6).txt;
@@ -376,8 +424,7 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
-//        Intent intent = new Intent(this, AutoUpdateService.class);
-//        startService(intent);
+
     }
     /**
      * 加载必应每日一图
