@@ -20,7 +20,13 @@
         android:layout_weight="1"
         android:gravity="center"
         android:textColor="#fff"/>
-
+    <ImageView
+        android:id="@+id/pic_img"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+          />
     <TextView
         android:id="@+id/max_text"
         android:layout_width="0dp"

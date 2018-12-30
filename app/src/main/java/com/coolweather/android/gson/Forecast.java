@@ -34,4 +34,9 @@ public class Forecast {
 
     @SerializedName("cond_txt_d")
     public String cond_txt_d;
+
+
+
+    @SerializedName("cond_code_d")
+    public String cond_code_d;
 }

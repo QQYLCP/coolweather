@@ -19,4 +19,10 @@ public class Now {
 
     @SerializedName("cond_txt")
     public String wcode;
+    @SerializedName("wind_dir")
+    public String wind_dir;
+    @SerializedName("wind_sc")
+    public String wind_sc;
+    @SerializedName("cond_code")
+    public String cond_code;
 }

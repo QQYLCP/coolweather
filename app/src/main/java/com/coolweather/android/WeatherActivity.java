@@ -2,7 +2,11 @@ package com.coolweather.android;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -44,6 +48,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private Button navButton;
     private Button localButton;
+    private Button searchButton;
 
     private TextView titleCity;
 
@@ -65,12 +70,14 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView sportText;
 
-    private ImageView bingPicImg;
+    private TextView windText;
 
+    private ImageView bingPicImg;
+    private ImageView degree_code;
     private String mWeatherId;
     private String lat;
     private String lon;
-
+    View apilayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +106,10 @@ public class WeatherActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navButton = (Button) findViewById(R.id.nav_button);
         localButton = (Button) findViewById(R.id.local_button);
+        searchButton = (Button)findViewById(R.id.search_button);
+        windText = (TextView) findViewById(R.id.windText);
+        degree_code = (ImageView) findViewById(R.id.degree_code);
+        apilayout = findViewById(R.id.apilayout);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
         final Weather weather;
@@ -111,8 +122,16 @@ public class WeatherActivity extends AppCompatActivity {
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
                 weatherLayout.setVisibility(View.INVISIBLE);
-                requestWeatherbylat(lat,lon);
-            }else{
+                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                requestWeatherbylat(weatherUrl);
+            }
+            else if (a.equals("3")){
+                String cityname = getIntent().getStringExtra("cityname");
+                weatherLayout.setVisibility(View.INVISIBLE);
+                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+cityname;
+                requestWeatherbylat(weatherUrl);
+            }
+            else{
                 if (Utility.handleWeatherResponsebyid(weatherString)==null){
                     weather = Utility.handleWeatherResponse(weatherString);
                 }else{
@@ -129,8 +148,6 @@ public class WeatherActivity extends AppCompatActivity {
                     showWeatherInfobycityid(weather);
                 }
             }
-//            }catch (Exception e){
-
         } else {
 //             无缓存时去服务器查询天气
             mWeatherId = getIntent().getStringExtra("weather_id");
@@ -139,11 +156,13 @@ public class WeatherActivity extends AppCompatActivity {
                 weatherLayout.setVisibility(View.INVISIBLE);
                 requestWeatherbycityid(mWeatherId);
             }else {
+
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
                 weatherLayout.setVisibility(View.INVISIBLE);
                 Log.d("44444","梵蒂冈跟不上");
-                requestWeatherbylat(lat,lon);
+                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                requestWeatherbylat(weatherUrl);
             }
         }
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -165,6 +184,13 @@ public class WeatherActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(WeatherActivity.this,SearchActivity.class);
+                startActivity(intent);
+            }
+        });
         String bingPic = prefs.getString("bing_pic", null);
         if (bingPic != null) {
             Glide.with(this).load(bingPic).into(bingPicImg);
@@ -175,9 +201,7 @@ public class WeatherActivity extends AppCompatActivity {
     /**
      * 根据经纬度请求城市天气信息。
      */
-    public void requestWeatherbylat(final String lat,final String lon) {
-        //fb0e22d7b17f4bd0947c2e0c0045093d
-        String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+    public void requestWeatherbylat(final String weatherUrl) {
 
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -265,32 +289,39 @@ public class WeatherActivity extends AppCompatActivity {
         String updateTime = weather.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature + "℃";
         String weatherInfo = weather.now.wcode;
+        String wind = weather.now.wind_dir +" "+ weather.now.wind_sc+"级";
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
+        windText.setText(wind);
         forecastLayout.removeAllViews();
+        //天气图标
+        String name = "p"+weather.now.cond_code;
+        int resID = getResources().getIdentifier(name, "drawable", "com.coolweather.android");
+        degree_code.setImageDrawable(getResources().getDrawable(resID));
+
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.date_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
             TextView minText = (TextView) view.findViewById(R.id.min_text);
+            ImageView pic_img = (ImageView) view.findViewById(R.id.pic_img);
             dateText.setText(forecast.date);
             infoText.setText(forecast.cond_txt_d);
-            maxText.setText(forecast.tmp_max);
-            minText.setText(forecast.tmp_min);
+            maxText.setText(forecast.tmp_max+ "℃");
+            minText.setText(forecast.tmp_min+ "℃");
+            pic_img.setImageDrawable(getResources().getDrawable(R.drawable.local));
+            //天气图片
+            String pname = "p"+ forecast.cond_code_d;
+            int resID1 = getResources().getIdentifier(pname, "drawable", "com.coolweather.android");
+            pic_img.setImageDrawable(getResources().getDrawable(resID1));
             forecastLayout.addView(view);
         }
         //设置空气质量不可见，因为没有数据
-        aqiText.setVisibility(View.GONE);
-        pm25Text.setVisibility(View.GONE);
-        TextView  noseetitle = (TextView) findViewById(R.id.nosee);
-        noseetitle.setVisibility(View.GONE);
-        TextView  aqinum = (TextView) findViewById(R.id.aqinum);
-        aqinum.setVisibility(View.GONE);
-        TextView  pmnum = (TextView) findViewById(R.id.pmnum);
-        pmnum.setVisibility(View.GONE);
+        apilayout.setVisibility(View.GONE);
+
 
         String comfort = "舒适度：" + weather.lifestyleList.get(0).txt;
         String carWash = "洗车指数：" + weather.lifestyleList.get(6).txt;
@@ -299,30 +330,28 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
-//        Intent intent = new Intent(this, AutoUpdateService.class);
-//        startService(intent);
     }
     /**
      * 根据cityid处理并展示Weather实体类中的数据。
      */
     private void showWeatherInfobycityid(Weather weather) {
-        aqiText.setVisibility(View.VISIBLE);
-        pm25Text.setVisibility(View.VISIBLE);
-        TextView  noseetitle = (TextView) findViewById(R.id.nosee);
-        noseetitle.setVisibility(View.VISIBLE);
-        TextView  aqinum = (TextView) findViewById(R.id.aqinum);
-        aqinum.setVisibility(View.VISIBLE);
-        TextView  pmnum = (TextView) findViewById(R.id.pmnum);
-        pmnum.setVisibility(View.VISIBLE);
 
+        apilayout.setVisibility(View.VISIBLE);
         String cityName = weather.basic.cityName;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature + "℃";
         String weatherInfo = weather.now.more.info;
+        String wind = weather.now.wind_dir  +" "+  weather.now.wind_sc+"级";
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
+        windText.setText(wind);
+        //天气图标
+        String name = "p"+weather.now.cond_code;
+        int resID = getResources().getIdentifier(name, "drawable", "com.coolweather.android");
+        degree_code.setImageDrawable(getResources().getDrawable(resID));
+
         forecastLayout.removeAllViews();
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
@@ -332,8 +361,8 @@ public class WeatherActivity extends AppCompatActivity {
             TextView minText = (TextView) view.findViewById(R.id.min_text);
             dateText.setText(forecast.date);
             infoText.setText(forecast.more.info);
-            maxText.setText(forecast.temperature.max);
-            minText.setText(forecast.temperature.min);
+            maxText.setText(forecast.temperature.max+ "℃");
+            minText.setText(forecast.temperature.min+ "℃");
             forecastLayout.addView(view);
         }
         if (weather.aqi != null) {
