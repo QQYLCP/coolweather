@@ -119,7 +119,7 @@ public class WeatherActivity extends AppCompatActivity {
         if (weatherString != null) {
 //             有缓存时直接解析天气数据
             String a = getIntent().getStringExtra("position");
-            //点击地位
+            //点击定位
             if (a.equals("2")){
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
@@ -129,6 +129,7 @@ public class WeatherActivity extends AppCompatActivity {
                 String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
                 requestWeatherbyAir(weatherUrl1);
             }
+            //点击搜索
             else if (a.equals("3")){
                 String cityname = getIntent().getStringExtra("cityname");
                 weatherLayout.setVisibility(View.INVISIBLE);
@@ -333,7 +334,7 @@ public class WeatherActivity extends AppCompatActivity {
             pm25Text.setText(air_now_city.pm251);
     }
     /**
-     * 根据经纬度处理并展示Weather实体类中的数据。
+     * 根据经纬度或城市名称处理并展示Weather实体类中的数据。
      */
     private void showWeatherInfobylat(Weather weather) {
         String cityName = weather.basic.location;//*
