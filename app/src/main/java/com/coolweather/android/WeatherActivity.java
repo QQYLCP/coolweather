@@ -411,6 +411,11 @@ public class WeatherActivity extends AppCompatActivity {
             infoText.setText(forecast.more.info);
             maxText.setText(forecast.temperature.max+ "℃");
             minText.setText(forecast.temperature.min+ "℃");
+            pic_img.setImageDrawable(getResources().getDrawable(R.drawable.local));
+             //天气图片
+            String pname = "p"+ forecast.cond_code_d;
+            int resID1 = getResources().getIdentifier(pname, "drawable", "com.coolweather.android");
+            pic_img.setImageDrawable(getResources().getDrawable(resID1));
             forecastLayout.addView(view);
         }
         if (weather.aqi != null) {
