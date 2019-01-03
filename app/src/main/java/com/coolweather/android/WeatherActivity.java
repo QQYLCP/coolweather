@@ -218,6 +218,7 @@ public class WeatherActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather", responseText);
                             editor.apply();
+                            apilayout.setVisibility(View.GONE);
                             mWeatherId = weather.basic.cityId;
                             String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
                             requestWeatherbyAir(weatherUrl1);
@@ -301,11 +302,11 @@ public class WeatherActivity extends AppCompatActivity {
                             Air_now_city air_now_city1=new Air_now_city();
                             air_now_city1.aqi1=air.air_now_city.aqi1;
                             air_now_city1.pm251=air.air_now_city.pm251;
+                            apilayout.setVisibility(View.VISIBLE);
                             showWeatherInfobyair(air_now_city1);
                         } else {
                             //设置空气质量不可见，因为没有数据
                             apilayout.setVisibility(View.GONE);
-                            Toast.makeText(WeatherActivity.this, "获取天气信息失败3", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -330,8 +331,8 @@ public class WeatherActivity extends AppCompatActivity {
      */
     private void showWeatherInfobyair(Air_now_city air_now_city) {
 
-            aqiText.setText(air_now_city.aqi1);
-            pm25Text.setText(air_now_city.pm251);
+        aqiText.setText(air_now_city.aqi1);
+        pm25Text.setText(air_now_city.pm251);
     }
     /**
      * 根据经纬度或城市名称处理并展示Weather实体类中的数据。
@@ -408,15 +409,12 @@ public class WeatherActivity extends AppCompatActivity {
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
             TextView minText = (TextView) view.findViewById(R.id.min_text);
+            ImageView pic_img = (ImageView) view.findViewById(R.id.pic_img);
             dateText.setText(forecast.date);
             infoText.setText(forecast.more.info);
             maxText.setText(forecast.temperature.max+ "℃");
             minText.setText(forecast.temperature.min+ "℃");
-            pic_img.setImageDrawable(getResources().getDrawable(R.drawable.local));
-             //天气图片
-            String pname = "p"+ forecast.cond_code_d;
-            int resID1 = getResources().getIdentifier(pname, "drawable", "com.coolweather.android");
-            pic_img.setImageDrawable(getResources().getDrawable(resID1));
+            //因为没有天气代码，所以没有天气图片
             forecastLayout.addView(view);
         }
         if (weather.aqi != null) {
