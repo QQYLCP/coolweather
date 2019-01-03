@@ -124,18 +124,20 @@ public class WeatherActivity extends AppCompatActivity {
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
                 weatherLayout.setVisibility(View.INVISIBLE);
-                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                //3f76f3fe4e4b43f2a34119211d3cc22a  我的
+                //31404c2b55de4f46a157f691d73feecc    超萍的
+                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+lat+","+lon;
                 requestWeatherbylat(weatherUrl);
-                String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+lat+","+lon;
                 requestWeatherbyAir(weatherUrl1);
             }
             //点击搜索
             else if (a.equals("3")){
                 String cityname = getIntent().getStringExtra("cityname");
                 weatherLayout.setVisibility(View.INVISIBLE);
-                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+cityname;
+                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+cityname;
                 requestWeatherbylat(weatherUrl);
-                String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+cityname;
+                String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+cityname;
                 requestWeatherbyAir(weatherUrl1);
             }
             else{
@@ -164,7 +166,7 @@ public class WeatherActivity extends AppCompatActivity {
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
                 weatherLayout.setVisibility(View.INVISIBLE);
-                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                String weatherUrl = "https://free-api.heweather.com/s6/weather?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+lat+","+lon;
                 requestWeatherbylat(weatherUrl);
             }
         }
@@ -220,7 +222,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.apply();
                             apilayout.setVisibility(View.GONE);
                             mWeatherId = weather.basic.cityId;
-                            String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=31404c2b55de4f46a157f691d73feecc&location="+lat+","+lon;
+                            String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+lat+","+lon;
                             requestWeatherbyAir(weatherUrl1);
                             showWeatherInfobylat(weather);
                         } else {
@@ -247,7 +249,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求城市天气信息。
      */
     public void requestWeatherbycityid(final String weatherId) {
-        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=31404c2b55de4f46a157f691d73feecc";
+        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=3f76f3fe4e4b43f2a34119211d3cc22a";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
