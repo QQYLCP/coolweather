@@ -115,7 +115,6 @@ public class WeatherActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
         final Weather weather;
-
         if (weatherString != null) {
 //             有缓存时直接解析天气数据
             String a = getIntent().getStringExtra("position");
@@ -124,8 +123,7 @@ public class WeatherActivity extends AppCompatActivity {
                 lat = getIntent().getStringExtra("lat");
                 lon = getIntent().getStringExtra("lon");
                 weatherLayout.setVisibility(View.INVISIBLE);
-                //3f76f3fe4e4b43f2a34119211d3cc22a  我的
-                //31404c2b55de4f46a157f691d73feecc    超萍的
+                //3f76f3fe4e4b43f2a34119211d3cc22a  、31404c2b55de4f46a157f691d73feecc
                 String weatherUrl = "https://free-api.heweather.com/s6/weather?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+lat+","+lon;
                 requestWeatherbylat(weatherUrl);
                 String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+lat+","+lon;
@@ -220,13 +218,12 @@ public class WeatherActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather", responseText);
                             editor.apply();
-                            apilayout.setVisibility(View.GONE);
                             mWeatherId = weather.basic.cityId;
                             String weatherUrl1 = "https://free-api.heweather.net/s6/air/now?key=3f76f3fe4e4b43f2a34119211d3cc22a&location="+lat+","+lon;
                             requestWeatherbyAir(weatherUrl1);
                             showWeatherInfobylat(weather);
                         } else {
-                            Toast.makeText(WeatherActivity.this, "获取天气信息失败3", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(WeatherActivity.this, "请输入正确的城市名称", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -304,12 +301,13 @@ public class WeatherActivity extends AppCompatActivity {
                             Air_now_city air_now_city1=new Air_now_city();
                             air_now_city1.aqi1=air.air_now_city.aqi1;
                             air_now_city1.pm251=air.air_now_city.pm251;
-                            apilayout.setVisibility(View.VISIBLE);
+                            //apilayout.setVisibility(View.VISIBLE);
                             showWeatherInfobyair(air_now_city1);
-                        } else {
-                            //设置空气质量不可见，因为没有数据
-                            apilayout.setVisibility(View.GONE);
                         }
+//                        else {
+//                            //设置空气质量不可见，因为没有数据
+//                            apilayout.setVisibility(View.GONE);
+//                        }
                     }
                 });
             }

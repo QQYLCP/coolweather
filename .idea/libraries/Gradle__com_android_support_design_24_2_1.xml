@@ -1,17 +1,17 @@
 <component name="libraryTable">
   <library name="Gradle: com.android.support:design-24.2.1">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/design-24.2.1.aar/2cd53bb10b03e97c4e04833e69ff08f5/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/design-24.2.1.aar/8166ea10388deef0be177183b86c41f1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/design-24.2.1.aar/2cd53bb10b03e97c4e04833e69ff08f5/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/design-24.2.1.aar/2cd53bb10b03e97c4e04833e69ff08f5/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/design-24.2.1.aar/8166ea10388deef0be177183b86c41f1/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/design-24.2.1.aar/8166ea10388deef0be177183b86c41f1/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://D:/ruanjian/Android/sdk/extras/android/m2repository/com/android/support/design/24.2.1/design-24.2.1-javadoc.jar!/" />
+      <root url="jar://E:/sofeware/Android/SDK/extras/android/m2repository/com/android/support/design/24.2.1/design-24.2.1-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://D:/ruanjian/Android/sdk/extras/android/m2repository/com/android/support/design/24.2.1/design-24.2.1-sources.jar!/" />
+      <root url="jar://E:/sofeware/Android/SDK/extras/android/m2repository/com/android/support/design/24.2.1/design-24.2.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
