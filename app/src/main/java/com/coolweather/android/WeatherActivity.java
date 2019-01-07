@@ -156,7 +156,6 @@ public class WeatherActivity extends AppCompatActivity {
         } else {
 //             无缓存时去服务器查询天气
             mWeatherId = getIntent().getStringExtra("weather_id");
-
             if (getIntent().getStringExtra("weather_id")!=null) {
                 weatherLayout.setVisibility(View.INVISIBLE);
                 requestWeatherbycityid(mWeatherId);
@@ -223,7 +222,7 @@ public class WeatherActivity extends AppCompatActivity {
                             requestWeatherbyAir(weatherUrl1);
                             showWeatherInfobylat(weather);
                         } else {
-                            Toast.makeText(WeatherActivity.this, "请输入正确的城市名称", Toast.LENGTH_SHORT).show();
+                            Log.d("aa","ddd");
                         }
                     }
                 });
@@ -234,7 +233,6 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(WeatherActivity.this, "获取天气信息失败4", Toast.LENGTH_SHORT).show();
                         swipeRefresh.setRefreshing(false);
                     }
                 });
@@ -262,7 +260,7 @@ public class WeatherActivity extends AppCompatActivity {
                             mWeatherId = weather.basic.weatherId;
                             showWeatherInfobycityid(weather);
                         } else {
-                            Toast.makeText(WeatherActivity.this, "获取天气信息失败1", Toast.LENGTH_SHORT).show();
+                            Log.d("aa","ddd");
                         }
                         swipeRefresh.setRefreshing(false);
                     }
@@ -274,7 +272,6 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(WeatherActivity.this, "获取天气信息失败2", Toast.LENGTH_SHORT).show();
                         swipeRefresh.setRefreshing(false);
                     }
                 });
@@ -301,13 +298,8 @@ public class WeatherActivity extends AppCompatActivity {
                             Air_now_city air_now_city1=new Air_now_city();
                             air_now_city1.aqi1=air.air_now_city.aqi1;
                             air_now_city1.pm251=air.air_now_city.pm251;
-                            //apilayout.setVisibility(View.VISIBLE);
                             showWeatherInfobyair(air_now_city1);
                         }
-//                        else {
-//                            //设置空气质量不可见，因为没有数据
-//                            apilayout.setVisibility(View.GONE);
-//                        }
                     }
                 });
             }
@@ -318,7 +310,6 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(WeatherActivity.this, "获取天气信息失败4", Toast.LENGTH_SHORT).show();
                         swipeRefresh.setRefreshing(false);
                     }
                 });
@@ -372,7 +363,6 @@ public class WeatherActivity extends AppCompatActivity {
             pic_img.setImageDrawable(getResources().getDrawable(resID1));
             forecastLayout.addView(view);
         }
-
         String comfort = "舒适度：" + weather.lifestyleList.get(0).txt;
         String carWash = "洗车指数：" + weather.lifestyleList.get(6).txt;
         String sport = "运行建议：" + weather.lifestyleList.get(3).txt;
@@ -401,7 +391,6 @@ public class WeatherActivity extends AppCompatActivity {
         String name = "p"+weather.now.cond_code;
         int resID = getResources().getIdentifier(name, "drawable", "com.coolweather.android");
         degree_code.setImageDrawable(getResources().getDrawable(resID));
-
         forecastLayout.removeAllViews();
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
@@ -409,7 +398,6 @@ public class WeatherActivity extends AppCompatActivity {
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
             TextView minText = (TextView) view.findViewById(R.id.min_text);
-            ImageView pic_img = (ImageView) view.findViewById(R.id.pic_img);
             dateText.setText(forecast.date);
             infoText.setText(forecast.more.info);
             maxText.setText(forecast.temperature.max+ "℃");

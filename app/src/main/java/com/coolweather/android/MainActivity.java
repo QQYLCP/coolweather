@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
             mLocationClient.registerLocationListener(new MyLocationListener());
             SDKInitializer.initialize(getApplicationContext());
             initData();
-//            positionText = (TextView) findViewById(R.id.position_text_view);
             List<String> permissionList = new ArrayList<>();
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -106,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private void requestLocation() {
         mLocationClient.start();
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -137,8 +137,10 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
                     String lat = location.getLatitude()+"";
                     String lon =  location.getLongitude()+"";
+                    String localt =  location.getLocType()+"";
                     intent.putExtra("lat", lat);
                     intent.putExtra("lon",lon);
+                    Log.d("肥佬发的", localt);
                     intent.putExtra("position", "1");
                     startActivity(intent);
                 }
